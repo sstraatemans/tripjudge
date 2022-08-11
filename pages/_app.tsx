@@ -2,15 +2,13 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
-import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
-import { UserProvider } from "../src/context/UserContext";
-import cookies from "js-cookie";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useAuthUser, UserProvider } from "../src/hooks/useAuthUser";
+import { useEffect } from "react";
 
 const theme = createTheme({});
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const router = useRouter();
-
   return (
     <UserProvider>
       <ThemeProvider theme={theme}>

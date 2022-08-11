@@ -8,18 +8,28 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/data/mikro-orm.config.ts"
+    ]
+  },
   "dependencies": {
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@mui/material": "^5.9.2",
+    "date-fns": "^2.29.1",
     "js-cookie": "^3.0.1",
     "next": "12.2.3",
+    "pg": "^8.7.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.7"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.2",
-    "@types/node": "18.6.3",
+    "@types/node": "^18.6.5",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
     "eslint": "8.21.0",

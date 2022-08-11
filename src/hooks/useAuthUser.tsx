@@ -1,24 +1,19 @@
 import { createContext, useContext, FC, useEffect, useState } from "react";
 import cookies from "js-cookie";
-
-export type User = {
-  uid: string;
-  name: string;
-};
+import { User } from "../data/entities/User";
+import { useRouter } from "next/router";
 
 type Props = {
   children: React.ReactElement;
 };
 
 type UserContextProps = {
-  isLoggedIn: boolean;
   user: User | null;
   signIn: (formData: FormData) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
 const userContext = createContext<UserContextProps>({
-  isLoggedIn: false,
   user: null,
   signIn: async (formData: FormData) => {},
   signOut: async () => {},
@@ -28,48 +23,69 @@ const userContext = createContext<UserContextProps>({
 export const useAuthUser = () => useContext(userContext);
 
 export const UserProvider: FC<Props> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     if (!user) {
+      router.push("/login");
+    } else {
+      router.push("/");
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user && !isLoading) {
       const uid = cookies.get("uid");
       if (uid) {
         getUser(uid);
       }
     }
-  }, []);
+  }, [isLoading]);
+
+  useEffect(() => {
+    if (user) {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const signIn = async (formData: FormData): Promise<void> => {
+    // if (isLoading) return;
+    // setIsLoading(true);
     const result = await fetch("/api/login", {
       method: "POST",
-      body: formData,
+      body: JSON.stringify({ username: formData.get("username") }),
     });
 
     const data = await result.json();
 
     setUser(data);
     // @TODO: add all kinds of checks
-    cookies.set("uid", data.uid);
+    cookies.set("uid", data.id);
   };
 
   const getUser = async (uid: string) => {
-    const result = await fetch(`/api/getuser?uid${uid}`);
+    if (isLoading) return;
+    setIsLoading(true);
+    console.log("getuser");
+    const result = await fetch(`/api/getuser?id=${uid}`);
 
     //@TODO: do checks
     const data = await result.json();
     setUser(data);
   };
 
-  const signOut = async (): Promise<void> => {};
+  const signOut = async (): Promise<void> => {
+    cookies.remove("uid");
+    setUser(null);
+  };
 
   return (
     <userContext.Provider
       value={{
         signIn,
         signOut,
-        isLoggedIn,
         user,
       }}
     >

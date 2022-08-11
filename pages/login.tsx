@@ -1,19 +1,12 @@
 import { NextPage } from "next";
 import { Button, FormControl, TextField } from "@mui/material";
 import { FormEvent, useEffect, useRef } from "react";
-import { useAuthUser } from "../src/context/UserContext";
+import { useAuthUser } from "../src/hooks/useAuthUser";
 import { useRouter } from "next/router";
 
 const LoginPage: NextPage = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const { signIn, user } = useAuthUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user?.uid) {
-      router.push("/");
-    }
-  }, [user]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
