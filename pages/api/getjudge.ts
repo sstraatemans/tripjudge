@@ -1,16 +1,18 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import { Judge } from "../../src/data/entities/Judge";
+import { getOrm } from "../../src/data/utils";
 
-import { JudgeType } from "../../src/hooks/useJudge";
-
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<JudgeType>
+  res: NextApiResponse<Judge | null>
 ) {
-  console.log(req.query);
-  res.status(200).json({
-    uid: "111111111",
-    value: Math.floor(Math.random() * 4),
-    date: new Date(),
-  });
+  const orm = await getOrm();
+
+  const uid = req.query.uid as unknown as number;
+  const date = req.query.date as unknown as number;
+
+  const judgeResult = await getJudgeByDate(orm, uid, date);
+
+  res.status(200).json(judgeResult);
 }

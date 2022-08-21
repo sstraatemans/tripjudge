@@ -1,6 +1,6 @@
 import { createContext, useContext, FC, useEffect, useState } from "react";
 import cookies from "js-cookie";
-import { User } from "../data/entities/User";
+import { User, EmptyUser } from "../data/entities/User";
 import { useRouter } from "next/router";
 
 type Props = {
@@ -8,13 +8,13 @@ type Props = {
 };
 
 type UserContextProps = {
-  user: User | null;
+  user: User | EmptyUser; //@TODO: take 1 value of the user object;
   signIn: (formData: FormData) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
 const userContext = createContext<UserContextProps>({
-  user: null,
+  user: {},
   signIn: async (formData: FormData) => {},
   signOut: async () => {},
 });
@@ -24,16 +24,18 @@ export const useAuthUser = () => useContext(userContext);
 
 export const UserProvider: FC<Props> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [hasError, setHasError] = useState<boolean>(false);
+  const [user, setUser] = useState<User | EmptyUser>({});
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) {
+    if (!user?.id) {
       router.push("/login");
+      cookies.remove("uid");
     } else {
       router.push("/");
     }
-  }, [user]);
+  }, [user, hasError]);
 
   useEffect(() => {
     if (!user && !isLoading) {
@@ -47,12 +49,15 @@ export const UserProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     if (user) {
       setIsLoading(false);
+      if (!user?.id) {
+        setHasError(true);
+      } else {
+        setHasError(false);
+      }
     }
   }, [user]);
 
   const signIn = async (formData: FormData): Promise<void> => {
-    // if (isLoading) return;
-    // setIsLoading(true);
     const result = await fetch("/api/login", {
       method: "POST",
       body: JSON.stringify({ username: formData.get("username") }),
@@ -60,25 +65,34 @@ export const UserProvider: FC<Props> = ({ children }) => {
 
     const data = await result.json();
 
+    console.log(data);
+
     setUser(data);
-    // @TODO: add all kinds of checks
-    cookies.set("uid", data.id);
+    cookies.set("uid", data.id, { expires: 12 });
   };
 
   const getUser = async (uid: string) => {
     if (isLoading) return;
     setIsLoading(true);
-    console.log("getuser");
+    setHasError(false);
     const result = await fetch(`/api/getuser?id=${uid}`);
 
+    console.log(result);
+
     //@TODO: do checks
-    const data = await result.json();
-    setUser(data);
+    if (result.status === 200) {
+      const data = await result.json();
+      if (data) {
+        setUser(data);
+      }
+    } else {
+      setUser({});
+    }
   };
 
   const signOut = async (): Promise<void> => {
     cookies.remove("uid");
-    setUser(null);
+    setUser({});
   };
 
   return (

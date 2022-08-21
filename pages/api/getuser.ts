@@ -4,36 +4,20 @@ import { User } from "../../src/data/entities/User";
 import { createConnection, getConnection } from "typeorm";
 import { getOrm } from "../../src/data/utils";
 import "reflect-metadata";
-import { checkUserByName } from "../../src/data/queries/user";
+import { checkUserById, checkUserByName } from "../../src/data/queries/user";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<User | null>
 ) {
-  console.log(req.query);
-
+  const id = req.query.id as unknown as number;
   const orm = await getOrm();
-  // console.log({ orm });
 
   //check if username exists.
-
-  // if so return user
-
-  // if not, create and return user
-
-  await orm
-    .createQueryBuilder()
-    .insert()
-    .into(User)
-    .values({
-      name: "steven",
-    })
-    .execute();
-
-  const user = await orm
-    .getRepository(User)
-    .createQueryBuilder("user")
-    .getOne();
-
-  res.status(200).json(user);
+  const user = await checkUserById(orm, id);
+  if (user) {
+    res.status(200).json(user);
+  } else {
+    res.status(404).json(null);
+  }
 }
