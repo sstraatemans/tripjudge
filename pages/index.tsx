@@ -46,6 +46,8 @@ const Home: NextPage = () => {
     setJudgeData(value, selectedDate);
   };
 
+  if (!user) return <div>loading</div>;
+
   return (
     <div>
       <pre>{user?.name}</pre>

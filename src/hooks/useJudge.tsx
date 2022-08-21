@@ -1,7 +1,7 @@
 import { getTime } from "date-fns";
 import { useEffect, useState } from "react";
 import { ValueType } from "../data/entities/Judge";
-import { User, EmptyUser } from "../data/entities/User";
+import { User } from "../data/entities/User";
 
 export type JudgeType = {
   id?: string;
@@ -10,7 +10,7 @@ export type JudgeType = {
   value: ValueType;
 };
 
-const useJudge = (date: Date, user: User | EmptyUser) => {
+const useJudge = (date: Date, user: User | null) => {
   const [judge, setJudge] = useState<JudgeType>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { createContext, useContext, FC, useEffect, useState } from "react";
 import cookies from "js-cookie";
-import { User, EmptyUser } from "../data/entities/User";
+import { User } from "../data/entities/User";
 import { useRouter } from "next/router";
 
 type Props = {
@@ -8,13 +8,13 @@ type Props = {
 };
 
 type UserContextProps = {
-  user: User | EmptyUser; //@TODO: take 1 value of the user object;
+  user: User | null; //@TODO: take 1 value of the user object;
   signIn: (formData: FormData) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
 const userContext = createContext<UserContextProps>({
-  user: {},
+  user: null,
   signIn: async (formData: FormData) => {},
   signOut: async () => {},
 });
@@ -23,39 +23,30 @@ const userContext = createContext<UserContextProps>({
 export const useAuthUser = () => useContext(userContext);
 
 export const UserProvider: FC<Props> = ({ children }) => {
+  const [init, setInit] = useState(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [hasError, setHasError] = useState<boolean>(false);
-  const [user, setUser] = useState<User | EmptyUser>({});
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    if (!user?.id) {
+    const uid = cookies.get("uid");
+    if ((uid && !user && !init) || !uid) {
       router.push("/login");
       cookies.remove("uid");
     } else {
       router.push("/");
     }
-  }, [user, hasError]);
+  }, [user, init]);
 
   useEffect(() => {
-    if (!user && !isLoading) {
-      const uid = cookies.get("uid");
-      if (uid) {
-        getUser(uid);
-      }
+    const uid = cookies.get("uid");
+    if (uid) {
+      console.log(2);
+      getUser(uid);
+    } else {
+      setInit(false);
     }
-  }, [isLoading]);
-
-  useEffect(() => {
-    if (user) {
-      setIsLoading(false);
-      if (!user?.id) {
-        setHasError(true);
-      } else {
-        setHasError(false);
-      }
-    }
-  }, [user]);
+  }, []);
 
   const signIn = async (formData: FormData): Promise<void> => {
     const result = await fetch("/api/login", {
@@ -72,7 +63,6 @@ export const UserProvider: FC<Props> = ({ children }) => {
   const getUser = async (uid: string) => {
     if (isLoading) return;
     setIsLoading(true);
-    setHasError(false);
     const result = await fetch(`/api/getuser?id=${uid}`);
 
     if (result.status === 200) {
@@ -81,13 +71,15 @@ export const UserProvider: FC<Props> = ({ children }) => {
         setUser(data);
       }
     } else {
-      setUser({});
+      setUser(null);
     }
+
+    setInit(false);
   };
 
   const signOut = async (): Promise<void> => {
     cookies.remove("uid");
-    setUser({});
+    setUser(null);
   };
 
   return (

@@ -1,10 +1,8 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import Grid from "@mui/material/Grid";
-import { useRouter } from "next/router";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useAuthUser, UserProvider } from "../src/hooks/useAuthUser";
-import { useEffect } from "react";
+import { UserProvider } from "../src/hooks/useAuthUser";
 
 const theme = createTheme({});
 
