@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 import { Judge } from "../../src/data/entities/Judge";
+import { getJudgeByDate } from "../../src/data/queries/judge";
 import { getOrm } from "../../src/data/utils";
 
 export default async function handler(

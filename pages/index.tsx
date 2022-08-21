@@ -7,6 +7,7 @@ import { Button, Stack } from "@mui/material";
 import { addDays, format, isBefore, isAfter, isEqual } from "date-fns";
 import { useJudge } from "../src/hooks/useJudge";
 import { constants } from "../src/data/constants";
+import VoteButton from "../src/components/VoteButton";
 
 const Home: NextPage = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -52,11 +53,11 @@ const Home: NextPage = () => {
       <h2>{format(selectedDate, "EEEE dd-MMMM-yyyy")}</h2>
 
       <Stack direction="row">
-        <Button onClick={handleClick(1)}>Sad</Button>
-        <Button onClick={handleClick(2)}>OK</Button>
-        <Button onClick={handleClick(3)}>Good</Button>
-        <Button onClick={handleClick(4)}>Awesome</Button>
-        <Button onClick={handleClick(5)}>DRINKING COMA</Button>
+        <VoteButton onClick={handleClick(1)}>Sad</VoteButton>
+        <VoteButton onClick={handleClick(2)}>OK</VoteButton>
+        <VoteButton onClick={handleClick(3)}>Good</VoteButton>
+        <VoteButton onClick={handleClick(4)}>Awesome</VoteButton>
+        <VoteButton onClick={handleClick(5)}>DRINKING COMA</VoteButton>
       </Stack>
 
       <pre>{JSON.stringify(judge, null, 2)}</pre>

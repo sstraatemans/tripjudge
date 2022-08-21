@@ -65,8 +65,6 @@ export const UserProvider: FC<Props> = ({ children }) => {
 
     const data = await result.json();
 
-    console.log(data);
-
     setUser(data);
     cookies.set("uid", data.id, { expires: 12 });
   };
@@ -77,9 +75,6 @@ export const UserProvider: FC<Props> = ({ children }) => {
     setHasError(false);
     const result = await fetch(`/api/getuser?id=${uid}`);
 
-    console.log(result);
-
-    //@TODO: do checks
     if (result.status === 200) {
       const data = await result.json();
       if (data) {

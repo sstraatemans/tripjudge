@@ -30,8 +30,6 @@ const useJudge = (date: Date, user: User | EmptyUser) => {
       `/api/getjudge?uid=${uid}&date=${getTime(date) / 1000}`
     );
 
-    console.log(result);
-
     const data = await result.json();
 
     setJudge(data);
@@ -40,10 +38,14 @@ const useJudge = (date: Date, user: User | EmptyUser) => {
   const setJudgeData = async (value: number, date: Date) => {
     const result = await fetch("/api/setjudge", {
       method: "POST",
-      body: JSON.stringify({ user, date: getTime(date) / 1000, value }),
+      body: JSON.stringify({ value, user, date: getTime(date) / 1000 }),
     });
 
-    const data = await result.json();
+    if (result.status === 200) {
+      const data = await result.json();
+
+      setJudge(data);
+    }
   };
 
   return { judge, isLoading, setJudgeData };
