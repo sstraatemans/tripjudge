@@ -1,48 +1,33 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { getTime } from "date-fns";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { EntityManager } from "typeorm";
 import { Judge } from "../../src/data/entities/Judge";
 import { User } from "../../src/data/entities/User";
-import { getJudgeByDate } from "../../src/data/queries/judge";
+import {
+  getJudgeByDate,
+  insertJudge,
+  updateJudge,
+} from "../../src/data/queries/judge";
 import { getOrm } from "../../src/data/utils";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Judge | null>
+  res: NextApiResponse<Judge | null | string>
 ) {
   const { user, date, value }: { user: User; date: number; value: number } =
     JSON.parse(req.body);
   const orm = await getOrm();
 
+  if (value === 1 || value < 0 || value > 5) {
+    //@TODO make this a check on enum AND 1
+    return res.status(412).send("No cheating, Boyd!");
+  }
+
   //first check if there already is a value for this date and this user
   const current = await getJudgeByDate(orm, user.id, date);
-  console.log({ current });
+
   if (!current) {
-    const result = await orm
-      .createQueryBuilder()
-      .insert()
-      .into(Judge)
-      .values({
-        user: { id: user.id },
-        date,
-        value,
-      })
-      .execute();
-
-    res.status(200).json(result.raw);
-  } else {
-    const result = await orm
-      .getRepository(Judge)
-      .createQueryBuilder()
-      .update({ value })
-      .where("user.id = :uid", { uid: user.id })
-      .andWhere("judge.date = :date", { date })
-      .returning("*")
-      .execute();
-
-    console.log(11111, result);
-
-    res.status(200).json(result.raw);
+    const result = await insertJudge(orm, user, date, value);
+    return res.status(200).json(result.raw[0]);
   }
+  const result = await updateJudge(orm, user, date, value);
+  res.status(200).json(result.raw[0]);
 }

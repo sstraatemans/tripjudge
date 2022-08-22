@@ -1,17 +1,10 @@
 import { getTime } from "date-fns";
 import { useEffect, useState } from "react";
-import { ValueType } from "../data/entities/Judge";
+import { Judge } from "../data/entities/Judge";
 import { User } from "../data/entities/User";
 
-export type JudgeType = {
-  id?: string;
-  date: Date;
-  uid: number;
-  value: ValueType;
-};
-
 const useJudge = (date: Date, user: User | null) => {
-  const [judge, setJudge] = useState<JudgeType>();
+  const [judge, setJudge] = useState<Judge>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   useEffect(() => {
     if (user?.id) {

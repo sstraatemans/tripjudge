@@ -1,13 +1,36 @@
-import { Button } from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 import { FC } from "react";
 
-type ButtonProps = {
-  onClick: () => void;
+export type Props = ButtonProps & {
+  handleClick?: (value: number) => void;
   children: string;
+  value: number;
+  judgeValue?: number;
 };
 
-const VoteButton: FC<ButtonProps> = ({ children, onClick }) => {
-  return <Button onClick={onClick}>{children}</Button>;
+const VoteButton: FC<Props> = ({
+  children,
+  handleClick = () => {},
+  value,
+  judgeValue,
+  onMouseOver = () => {},
+}) => {
+  const checkSelected = (): boolean => {
+    if (!judgeValue) return false;
+    return parseInt("" + judgeValue, 10) === value;
+  };
+
+  return (
+    <Button
+      onMouseOver={onMouseOver}
+      variant={checkSelected() ? "outlined" : "contained"}
+      onClick={() => {
+        if (!checkSelected()) handleClick(value);
+      }}
+    >
+      {children}
+    </Button>
+  );
 };
 
 export default VoteButton;

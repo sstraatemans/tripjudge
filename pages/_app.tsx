@@ -1,8 +1,8 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { UserProvider } from "../src/hooks/useAuthUser";
+import { Typography, Grid } from "@mui/material";
 
 const theme = createTheme({});
 
@@ -16,15 +16,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 
         <Grid container spacing={2}>
           <Grid item xs={0} md={2}></Grid>
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={8} style={{ textAlign: "center" }}>
             <header>
-              <h1>Trip Judge</h1>
+              <Typography variant="h1">Trip Judge</Typography>
             </header>
+
+            <Component {...pageProps} />
           </Grid>
           <Grid item xs={0} md={2}></Grid>
         </Grid>
-
-        <Component {...pageProps} />
       </ThemeProvider>
     </UserProvider>
   );
