@@ -22,6 +22,7 @@ const VoteButton: FC<Props> = ({
 
   return (
     <Button
+      style={{ fontSize: "50px" }}
       onMouseOver={onMouseOver}
       variant={checkSelected() ? "outlined" : "contained"}
       onClick={() => {

@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Judge } from "../data/entities/Judge";
+import { Judge, ValueType } from "../data/entities/Judge";
 import SadButton from "./SadButton";
 import VoteButton from "./VoteButton";
 
@@ -8,6 +8,33 @@ type Props = {
   setJudgeData: (value: number) => void;
 };
 
+type VoteValue = {
+  value: ValueType;
+  label: string;
+};
+const voteValues: VoteValue[] = [
+  {
+    value: 1,
+    label: "👎",
+  },
+  {
+    value: 2,
+    label: "👍",
+  },
+  {
+    value: 3,
+    label: "❤️",
+  },
+  {
+    value: 4,
+    label: "🤙",
+  },
+  {
+    value: 5,
+    label: "🍻🤮",
+  },
+];
+
 const Vote: FC<Props> = ({ judge, setJudgeData }) => {
   const [over, setOver] = useState<boolean>(false);
 
@@ -15,55 +42,38 @@ const Vote: FC<Props> = ({ judge, setJudgeData }) => {
     setOver(v => !v);
   };
 
+  const sortVotes = (a: VoteValue, b: VoteValue) => {
+    if (over && a.value < b.value) return 1;
+    if (over && a.value > b.value) return -1;
+    if (!over && a.value < b.value) return -1;
+    if (!over && a.value > b.value) return 1;
+    return 0;
+  };
+
   return (
     <>
-      {!over && (
-        <SadButton
-          value={1}
-          judgeValue={judge?.value}
-          onMouseOver={handleHover}
-        >
-          Sad
-        </SadButton>
-      )}
-
-      <VoteButton
-        value={2}
-        judgeValue={judge?.value}
-        handleClick={setJudgeData}
-      >
-        OK
-      </VoteButton>
-      <VoteButton
-        value={3}
-        judgeValue={judge?.value}
-        handleClick={setJudgeData}
-      >
-        Good
-      </VoteButton>
-      <VoteButton
-        value={4}
-        judgeValue={judge?.value}
-        handleClick={setJudgeData}
-      >
-        Awesome
-      </VoteButton>
-      <VoteButton
-        value={5}
-        judgeValue={judge?.value}
-        handleClick={setJudgeData}
-      >
-        DRINKING COMA
-      </VoteButton>
-      {over && (
-        <SadButton
-          value={1}
-          judgeValue={judge?.value}
-          onMouseOver={handleHover}
-        >
-          Sad
-        </SadButton>
-      )}
+      {voteValues.sort(sortVotes).map((vote: VoteValue) => {
+        if (vote.value === 1) {
+          return (
+            <SadButton
+              value={vote.value}
+              judgeValue={judge?.value}
+              onMouseOver={handleHover}
+            >
+              {vote.label}
+            </SadButton>
+          );
+        }
+        return (
+          <VoteButton
+            value={vote.value}
+            judgeValue={judge?.value}
+            handleClick={setJudgeData}
+          >
+            {vote.label}
+          </VoteButton>
+        );
+      })}
     </>
   );
 };

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { Judge } from "../../src/data/entities/Judge";
+import { Judge, ValueType } from "../../src/data/entities/Judge";
 import { User } from "../../src/data/entities/User";
 import {
   getJudgeByDate,
@@ -16,8 +16,7 @@ export default async function handler(
     JSON.parse(req.body);
   const orm = await getOrm();
 
-  if (value === 1 || value < 0 || value > 5) {
-    //@TODO make this a check on enum AND 1
+  if (!(value in ValueType) || value === 1) {
     return res.status(412).send("No cheating, Boyd!");
   }
 
