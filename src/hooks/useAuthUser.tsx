@@ -41,7 +41,6 @@ export const UserProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     const uid = cookies.get("uid");
     if (uid) {
-      console.log(2);
       getUser(uid);
     } else {
       setInit(false);

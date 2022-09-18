@@ -56,6 +56,7 @@ const Vote: FC<Props> = ({ judge, setJudgeData }) => {
         if (vote.value === 1) {
           return (
             <SadButton
+              key={vote.value}
               value={vote.value}
               judgeValue={judge?.value}
               onMouseOver={handleHover}
@@ -66,6 +67,7 @@ const Vote: FC<Props> = ({ judge, setJudgeData }) => {
         }
         return (
           <VoteButton
+            key={vote.value}
             value={vote.value}
             judgeValue={judge?.value}
             handleClick={setJudgeData}
